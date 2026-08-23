@@ -1,40 +1,12 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <!-- Core Site Architecture -->
   <url>
     <loc>https://tajiedeals.vercel.app/</loc>
     <lastmod>2026-08-23</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://tajiedeals.vercel.app/collections</loc>
-    <lastmod>2026-08-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://tajiedeals.vercel.app/collections/clean-wfh-desk-setup</loc>
-    <lastmod>2026-08-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://tajiedeals.vercel.app/collections/home-cafe-coffee-gear</loc>
-    <lastmod>2026-08-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://tajiedeals.vercel.app/collections/under-299-dangerously-cheap</loc>
-    <lastmod>2026-08-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://tajiedeals.vercel.app/collections/tiktok-viral-must-haves</loc>
-    <lastmod>2026-08-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://tajiedeals.vercel.app/vouchers</loc>
@@ -43,16 +15,16 @@
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://tajiedeals.vercel.app/collections</loc>
+    <lastmod>2026-08-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://tajiedeals.vercel.app/bio</loc>
     <lastmod>2026-08-23</lastmod>
     <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://tajiedeals.vercel.app/links</loc>
-    <lastmod>2026-08-23</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://tajiedeals.vercel.app/wishlist</loc>
@@ -60,34 +32,118 @@
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
+
+  <!-- Curated Product Gateways -->
   <url>
     <loc>https://tajiedeals.vercel.app/go/aula-f75-mechanical-keyboard</loc>
     <lastmod>2026-08-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://epomaker.com/cdn/shop/files/f75.jpg</image:loc>
+      <image:title>AULA F75 Wireless Mechanical Keyboard</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://tajiedeals.vercel.app/go/baseus-monitor-light-bar-stepless</loc>
     <lastmod>2026-08-23</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://tajiedeals.vercel.app/go/ugreen-nexode-65w-gan-fast-charger</loc>
+    <lastmod>2026-08-23</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://tajiedeals.vercel.app/go/wool-felt-minimalist-desk-pad-mat</loc>
+    <lastmod>2026-08-23</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://tajiedeals.vercel.app/go/felt-desk-pad-mat-minimalist</loc>
+    <loc>https://tajiedeals.vercel.app/go/magnetic-desk-cable-organizer-silicone</loc>
     <lastmod>2026-08-23</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://tajiedeals.vercel.app/go/timemore-chestnut-c3-grinder</loc>
+    <loc>https://tajiedeals.vercel.app/go/timemore-chestnut-c3-manual-coffee-grinder</loc>
     <lastmod>2026-08-23</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://tajiedeals.vercel.app/go/portable-handheld-espresso-maker-pump</loc>
+    <lastmod>2026-08-23</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://tajiedeals.vercel.app/go/chubby-fat-handle-ceramic-mug-saucer</loc>
+    <lastmod>2026-08-23</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://tajiedeals.vercel.app/go/ugreen-100w-gan-fast-charger</loc>
+    <loc>https://tajiedeals.vercel.app/go/precision-digital-coffee-scale-timer</loc>
     <lastmod>2026-08-23</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://tajiedeals.vercel.app/go/electric-handheld-milk-frother-matcha-whisk</loc>
+    <lastmod>2026-08-23</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://tajiedeals.vercel.app/go/ergonomic-orthopedic-memory-foam-seat-cushion</loc>
+    <lastmod>2026-08-23</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://tajiedeals.vercel.app/go/viral-16-color-sunset-projection-lamp</loc>
+    <lastmod>2026-08-23</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://tajiedeals.vercel.app/go/tuya-smart-wifi-plug-energy-monitoring-16a</loc>
+    <lastmod>2026-08-23</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://tajiedeals.vercel.app/go/flame-air-humidifier-aroma-diffuser</loc>
+    <lastmod>2026-08-23</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://tajiedeals.vercel.app/go/anti-slip-thick-memory-foam-bath-mat</loc>
+    <lastmod>2026-08-23</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://tajiedeals.vercel.app/go/silicone-protective-boot-tumbler-bumper</loc>
+    <lastmod>2026-08-23</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://tajiedeals.vercel.app/go/240gsm-heavyweight-cotton-oversized-tshirt</loc>
+    <lastmod>2026-08-23</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://tajiedeals.vercel.app/go/ultralight-flexible-titanium-anti-blue-light-glasses</loc>
+    <lastmod>2026-08-23</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
 </urlset>

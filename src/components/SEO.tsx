@@ -10,11 +10,12 @@ interface SEOProps {
   products?: Product[];
   faqs?: Array<{ question: string; answer: string }>;
   breadcrumbs?: Array<{ name: string; item: string }>;
+  keywords?: string;
 }
 
 export function SEO({
-  title = "Tajie Studio — Curated Shopee Budol Finds & Aesthetic Tech",
-  description = "Independent editorial guide to the highest-rated mechanical keyboards, WFH desk setups, home cafe gear, and verified Shopee promo vouchers in the Philippines.",
+  title = "Tajie Studio — Top 5 Curated Shopee Finds & Aesthetic Tech (Zero Bloat)",
+  description = "Independent editorial guide to the highest-rated mechanical keyboards, WFH desk setups, home cafe essentials, and verified Shopee promo vouchers in the Philippines.",
   image = 'https://images.unsplash.com/photo-1593062096033-9a26b09da705?auto=format&fit=crop&w=1200&q=80',
   url = typeof window !== 'undefined' ? window.location.href : 'https://tajiedeals.vercel.app/',
   type = 'website',
@@ -38,6 +39,7 @@ export function SEO({
     },
   ],
   breadcrumbs,
+  keywords = 'Shopee budol finds, Shopee affiliate deals Philippines, mechanical keyboard Shopee, AULA F75 review, WFH desk setup Philippines, aesthetic desk accessories, Shopee discount vouchers 2026, Shopee mega discount code',
 }: SEOProps) {
   useEffect(() => {
     // 1. Document Title
@@ -75,15 +77,32 @@ export function SEO({
       el.setAttribute('href', href);
     };
 
+    // Standard SEO Tags
     setMeta('description', description);
+    setMeta('keywords', keywords);
+    setMeta('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
+    setMeta('geo.region', 'PH');
+    setMeta('geo.placename', 'Philippines');
+    setMeta('target', 'all');
+
+    // OpenGraph
     setOgMeta('og:title', title);
     setOgMeta('og:description', description);
     setOgMeta('og:image', image);
     setOgMeta('og:url', url);
     setOgMeta('og:type', type);
+    setOgMeta('og:locale', 'en_PH');
+    setOgMeta('og:site_name', 'Tajie Studio');
+
+    // Twitter Card
+    setMeta('twitter:card', 'summary_large_image');
+    setMeta('twitter:title', title);
+    setMeta('twitter:description', description);
+    setMeta('twitter:image', image);
+
     setCanonical(url);
 
-    // 2. Inject JSON-LD Structured Data for Google Rich Results
+    // 2. Inject Complete JSON-LD Structured Data Suite
     const scriptId = 'tajie-jsonld-schema';
     let scriptTag = document.getElementById(scriptId) as HTMLScriptElement | null;
     if (!scriptTag) {
@@ -94,17 +113,27 @@ export function SEO({
     }
 
     const schemas: any[] = [
-      // Organization & WebSite
+      // WebSite Schema with SearchAction
       {
         '@context': 'https://schema.org',
         '@type': 'WebSite',
         name: 'Tajie Studio',
         url: 'https://tajiedeals.vercel.app/',
         description: description,
-        author: {
-          '@type': 'Person',
-          name: 'Tajie',
-          jobTitle: 'Curator & Tech Reviewer',
+        inLanguage: 'en-PH',
+        publisher: {
+          '@type': 'Organization',
+          name: 'Tajie Studio',
+          url: 'https://tajiedeals.vercel.app/',
+          logo: {
+            '@type': 'ImageObject',
+            url: 'https://tajiedeals.vercel.app/images/products/aula-f75.jpg',
+          },
+          sameAs: [
+            'https://www.tiktok.com/@tajiedeals',
+            'https://instagram.com/tajiedeals',
+            'https://shopee.ph',
+          ],
         },
         potentialAction: {
           '@type': 'SearchAction',
@@ -144,11 +173,13 @@ export function SEO({
       });
     }
 
-    // ItemList Schema for Product Feeds
+    // ItemList & Product Schemas with Full Review, Offer & Rating Specs
     if (products && products.length > 0) {
       schemas.push({
         '@context': 'https://schema.org',
         '@type': 'ItemList',
+        name: title,
+        description: description,
         itemListElement: products.map((p, idx) => ({
           '@type': 'ListItem',
           position: idx + 1,
@@ -158,12 +189,22 @@ export function SEO({
             description: p.description,
             image: p.image,
             sku: p.id,
+            brand: {
+              '@type': 'Brand',
+              name: p.title.split(' ')[0] || 'Verified Merchant',
+            },
             offers: {
               '@type': 'Offer',
               priceCurrency: 'PHP',
               price: p.price,
+              priceValidUntil: '2027-12-31',
+              itemCondition: 'https://schema.org/NewCondition',
               availability: 'https://schema.org/InStock',
               url: `https://tajiedeals.vercel.app/go/${p.slug}`,
+              seller: {
+                '@type': 'Organization',
+                name: p.sellerBadge ?? 'Shopee Philippines Star/Mall Merchant',
+              },
             },
             aggregateRating: {
               '@type': 'AggregateRating',
@@ -172,23 +213,26 @@ export function SEO({
               bestRating: 5,
               worstRating: 1,
             },
-            review: p.reviewQuote
-              ? {
-                  '@type': 'Review',
-                  author: {
-                    '@type': 'Person',
-                    name: 'Tajie',
-                  },
-                  reviewBody: p.reviewQuote,
-                }
-              : undefined,
+            review: {
+              '@type': 'Review',
+              author: {
+                '@type': 'Person',
+                name: 'Tajie Studio Review Team',
+              },
+              reviewRating: {
+                '@type': 'Rating',
+                ratingValue: p.rating,
+                bestRating: 5,
+              },
+              reviewBody: p.whyRanked || p.reviewQuote || p.tagline,
+            },
           },
         })),
       });
     }
 
     scriptTag.textContent = JSON.stringify(schemas);
-  }, [title, description, image, url, type, products, faqs, breadcrumbs]);
+  }, [title, description, image, url, type, products, faqs, breadcrumbs, keywords]);
 
   return null;
 }

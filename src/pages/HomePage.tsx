@@ -1,4 +1,4 @@
-﻿import { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import {
   ArrowUpRight,
   Check,
@@ -318,8 +318,14 @@ export function HomePage() {
               return (
                 <article
                   key={product.id}
+                  itemScope
+                  itemType="https://schema.org/Product"
                   className="group relative rounded-3xl bg-white border border-[#E8E6E1] p-5 sm:p-6 shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_28px_rgba(0,0,0,0.07)] hover:border-[#141312]/30 transition-all flex flex-col md:flex-row gap-5 sm:gap-6 items-start md:items-center"
                 >
+                  {/* Hidden Schema Meta */}
+                  <meta itemProp="sku" content={product.id} />
+                  <meta itemProp="description" content={product.description} />
+
                   {/* Rank Number Badge */}
                   <div className="shrink-0 flex md:flex-col items-center gap-2">
                     <div className="h-12 w-12 rounded-2xl bg-[#141312] text-[#FAF9F6] grid place-items-center font-serif font-bold text-xl shadow-xs">
@@ -333,8 +339,11 @@ export function HomePage() {
                     className="relative aspect-square w-full md:w-36 shrink-0 rounded-2xl overflow-hidden bg-neutral-100 cursor-pointer border border-[#E8E6E1]"
                   >
                     <img
+                      itemProp="image"
                       src={product.image}
                       alt={product.title}
+                      loading="lazy"
+                      decoding="async"
                       className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     {product.discountPercentage > 0 && (
@@ -350,7 +359,15 @@ export function HomePage() {
                       <span className={`rounded-full px-2.5 py-0.5 text-[0.625rem] font-bold uppercase tracking-wider border ${rankInfo.bg}`}>
                         {product.rankRole ?? rankInfo.label}
                       </span>
-                      <div className="flex items-center gap-1 text-xs text-neutral-600">
+                      <div
+                        itemProp="aggregateRating"
+                        itemScope
+                        itemType="https://schema.org/AggregateRating"
+                        className="flex items-center gap-1 text-xs text-neutral-600"
+                      >
+                        <meta itemProp="ratingValue" content={String(product.rating)} />
+                        <meta itemProp="reviewCount" content={String(product.reviewCount)} />
+                        <meta itemProp="bestRating" content="5" />
                         <Star className="h-3 w-3 fill-[#B89358] text-[#B89358]" />
                         <span className="font-semibold text-neutral-900">{product.rating}</span>
                         <span className="text-neutral-400">({product.salesCount})</span>
@@ -361,6 +378,7 @@ export function HomePage() {
                     </div>
 
                     <h3
+                      itemProp="name"
                       onClick={() => setQuickViewProduct(product)}
                       className="font-serif text-base sm:text-lg font-bold text-[#141312] leading-snug cursor-pointer hover:text-[#9B381E] transition-colors"
                     >
@@ -389,7 +407,17 @@ export function HomePage() {
                   </div>
 
                   {/* Price & Primary CTA */}
-                  <div className="w-full md:w-44 shrink-0 flex md:flex-col items-center md:items-end justify-between gap-3 pt-3 md:pt-0 border-t md:border-t-0 border-neutral-100">
+                  <div
+                    itemProp="offers"
+                    itemScope
+                    itemType="https://schema.org/Offer"
+                    className="w-full md:w-44 shrink-0 flex md:flex-col items-center md:items-end justify-between gap-3 pt-3 md:pt-0 border-t md:border-t-0 border-neutral-100"
+                  >
+                    <meta itemProp="priceCurrency" content="PHP" />
+                    <meta itemProp="price" content={String(product.price)} />
+                    <meta itemProp="availability" content="https://schema.org/InStock" />
+                    <meta itemProp="url" content={`https://tajiedeals.vercel.app/go/${product.slug}`} />
+
                     <div className="text-left md:text-right">
                       <div className="flex items-baseline gap-1.5 md:justify-end">
                         <span className="font-bold text-lg sm:text-xl text-[#141312]">

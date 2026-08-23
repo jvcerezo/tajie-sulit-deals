@@ -1,5 +1,25 @@
-﻿User-agent: *
+﻿# Tajie Studio SEO Crawl Directives
+User-agent: Googlebot
 Allow: /
 Disallow: /admin
+Disallow: /scratch
 
+User-agent: Bingbot
+Allow: /
+Disallow: /admin
+Disallow: /scratch
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /scratch
+
+# Host & Sitemap
+Host: https://tajiedeals.vercel.app
 Sitemap: https://tajiedeals.vercel.app/sitemap.xml
