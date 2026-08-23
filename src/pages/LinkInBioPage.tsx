@@ -11,18 +11,20 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
-import { PRODUCTS } from '@/data/products';
-import { formatPHP, trackAffiliateClick } from '@/lib/format';
+import { useProducts } from '@/lib/storage';
+import { trackAffiliateClick } from '@/lib/analytics';
+import { formatPHP } from '@/lib/format';
 import { SEO } from '@/components/SEO';
 import { Link } from 'react-router-dom';
 
 export function LinkInBioPage() {
+  const products = useProducts();
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedLink, setCopiedLink] = useState(false);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
-    return PRODUCTS.filter((p) => {
+    return products.filter((p) => {
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const matchesTitle = p.title.toLowerCase().includes(q);

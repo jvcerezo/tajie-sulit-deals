@@ -7,7 +7,8 @@ import {
 } from 'lucide-react';
 
 import type { Product } from '@/types';
-import { formatPHP, trackAffiliateClick } from '@/lib/format';
+import { formatPHP } from '@/lib/format';
+import { trackAffiliateClick } from '@/lib/analytics';
 
 interface QuickViewModalProps {
   product: Product | null;

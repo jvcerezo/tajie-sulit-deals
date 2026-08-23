@@ -2,15 +2,17 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowRight, Flame, ShieldCheck, ShoppingBag } from 'lucide-react';
 
-import { PRODUCTS } from '@/data/products';
-import { trackAffiliateClick, formatPHP } from '@/lib/format';
+import { useProducts } from '@/lib/storage';
+import { trackAffiliateClick } from '@/lib/analytics';
+import { formatPHP } from '@/lib/format';
 import { SEO } from '@/components/SEO';
 
 export function RedirectPage() {
   const { slug } = useParams<{ slug: string }>();
   const [countdown, setCountdown] = useState(2);
+  const products = useProducts();
 
-  const product = PRODUCTS.find((p) => p.slug === slug || p.id === slug);
+  const product = products.find((p) => p.slug === slug || p.id === slug);
 
   useEffect(() => {
     if (!product) return;

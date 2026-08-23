@@ -11,7 +11,7 @@ import {
   Zap,
 } from 'lucide-react';
 
-import { PRODUCTS } from '@/data/products';
+import { useProducts } from '@/lib/storage';
 import { VOUCHERS } from '@/data/vouchers';
 import { COLLECTIONS } from '@/data/collections';
 import type { Category, PriceFilterRange, Product, SortOption } from '@/types';
@@ -31,6 +31,7 @@ const CATEGORIES: Category[] = [
 ];
 
 export function HomePage() {
+  const products = useProducts();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialCategory = (searchParams.get('category') as Category) || 'All';
   const initialPrice = (searchParams.get('price') as PriceFilterRange) || 'all';
@@ -45,7 +46,7 @@ export function HomePage() {
 
   // Filtered & Sorted Products
   const filteredProducts = useMemo(() => {
-    return PRODUCTS.filter((item) => {
+    return products.filter((item) => {
       // Search
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();

@@ -9,25 +9,18 @@ export function calculateSavings(price: number, originalPrice: number): number {
   return Math.round(((originalPrice - price) / originalPrice) * 100);
 }
 
-/** Log affiliate click in localStorage */
-export function trackAffiliateClick(productId: string): void {
+/**
+ * Builds a Shopee affiliate link with custom Sub-ID tracking parameters.
+ * Allows tracking conversions from specific sources (e.g. tiktok, bio, deals, lookbook).
+ */
+export function buildShopeeAffiliateUrl(baseUrl: string, source = 'tajie_web'): string {
   try {
-    const key = 'tajie_affiliate_clicks';
-    const existing = JSON.parse(localStorage.getItem(key) ?? '{}');
-    existing[productId] = (existing[productId] ?? 0) + 1;
-    localStorage.setItem(key, JSON.stringify(existing));
+    const url = new URL(baseUrl);
+    url.searchParams.set('sub_id', source);
+    url.searchParams.set('utm_source', 'tajie_sulit_deals');
+    return url.toString();
   } catch {
-    // ignore
+    return baseUrl;
   }
 }
 
-/** Get recorded clicks for a product */
-export function getAffiliateClicks(productId: string): number {
-  try {
-    const key = 'tajie_affiliate_clicks';
-    const existing = JSON.parse(localStorage.getItem(key) ?? '{}');
-    return existing[productId] ?? 0;
-  } catch {
-    return 0;
-  }
-}

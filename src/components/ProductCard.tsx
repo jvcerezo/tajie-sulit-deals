@@ -3,6 +3,7 @@ import {
   Check,
   Eye,
   Flame,
+  Heart,
   Share2,
   Star,
   Zap,
@@ -10,7 +11,9 @@ import {
 import confetti from 'canvas-confetti';
 
 import type { Product } from '@/types';
-import { formatPHP, trackAffiliateClick } from '@/lib/format';
+import { formatPHP } from '@/lib/format';
+import { trackAffiliateClick } from '@/lib/analytics';
+import { useWishlist, toggleWishlist } from '@/lib/storage';
 
 interface ProductCardProps {
   product: Product;
@@ -19,6 +22,8 @@ interface ProductCardProps {
 
 export function ProductCard({ product, onQuickView }: ProductCardProps) {
   const [copied, setCopied] = useState(false);
+  const wishlist = useWishlist();
+  const isWishlisted = wishlist.includes(product.id);
 
   const handleCopyLink = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -76,6 +81,23 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
             </span>
           )}
         </div>
+
+        {/* Heart Wishlist Toggle Button */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleWishlist(product.id);
+          }}
+          className={`absolute top-2.5 right-2.5 z-20 h-8 w-8 rounded-full grid place-items-center transition-all cursor-pointer shadow-sm ${
+            isWishlisted
+              ? 'bg-rose-50 text-rose-600 border border-rose-200 scale-105'
+              : 'bg-white/80 backdrop-blur-xs text-slate-500 hover:text-rose-600 hover:bg-white'
+          }`}
+          title={isWishlisted ? 'Remove from wishlist' : 'Save to My Budol List'}
+        >
+          <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-rose-600 text-rose-600' : ''}`} />
+        </button>
 
         {/* Quick View Hover Button */}
         {onQuickView && (
