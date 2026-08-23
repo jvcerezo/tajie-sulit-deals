@@ -1,4 +1,4 @@
-﻿import type { Product } from '@/types';
+import type { Product } from '@/types';
 
 export const PRODUCTS: Product[] = [
   // ==========================================
@@ -21,8 +21,8 @@ export const PRODUCTS: Product[] = [
     subCategory: 'Keyboards',
     tags: ['TikTok Viral', 'Desk Setup', 'Creamy Thock', 'Top 5'],
     image: 'https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&w=800&q=80',
-    shopeeUrl: 'https://shopee.ph/search?keyword=AULA+F75',
-    affiliateUrl: 'https://shopee.ph/search?keyword=AULA+F75',
+    shopeeUrl: 'https://s.shopee.ph/19oV8zndP',
+    affiliateUrl: 'https://s.shopee.ph/19oV8zndP',
     featured: true,
     isTikTokViral: true,
     badge: "Tajie's Top Pick ⭐",
@@ -62,8 +62,8 @@ export const PRODUCTS: Product[] = [
     subCategory: 'Lighting',
     tags: ['WFH Must-Have', 'Desk Glow Up', 'Under ₱1k', 'Top 5'],
     image: 'https://images.unsplash.com/photo-1547082299-de196ea013d6?auto=format&fit=crop&w=800&q=80',
-    shopeeUrl: 'https://shopee.ph/search?keyword=Baseus+Monitor+Light+Bar',
-    affiliateUrl: 'https://shopee.ph/search?keyword=Baseus+Monitor+Light+Bar',
+    shopeeUrl: 'https://s.shopee.ph/4AzNSrf9w8',
+    affiliateUrl: 'https://s.shopee.ph/4AzNSrf9w8',
     featured: true,
     isTikTokViral: true,
     badge: 'Shopee Choice 🏆',
