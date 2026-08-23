@@ -5,8 +5,8 @@ import {
   Heart,
   Share2,
   Star,
-  ExternalLink,
-  Sparkles,
+  ArrowUpRight,
+  ShieldCheck,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -32,8 +32,8 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
     navigator.clipboard.writeText(url);
     setCopied(true);
     confetti({
-      particleCount: 25,
-      spread: 50,
+      particleCount: 20,
+      spread: 40,
       origin: { y: 0.8 },
     });
     setTimeout(() => setCopied(false), 2000);
@@ -43,41 +43,32 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
     trackAffiliateClick(product.id);
   };
 
-  // Editorial Badge styling
-  const badgeStyles: Record<string, string> = {
-    "Tajie's Top Pick ⭐": 'bg-amber-100 text-amber-900 border-amber-300 font-extrabold',
-    'Glitch Price ⚡': 'bg-rose-100 text-rose-900 border-rose-300 font-extrabold animate-pulse-subtle',
-    'TikTok Viral 🔥': 'bg-orange-100 text-orange-900 border-orange-300 font-extrabold',
-    'Under ₱299 💸': 'bg-emerald-100 text-emerald-900 border-emerald-300 font-bold',
-    'Shopee Choice 🏆': 'bg-stone-100 text-stone-800 border-stone-300 font-bold',
-    'Best Seller 🚀': 'bg-blue-100 text-blue-900 border-blue-300 font-bold',
-  };
-
   return (
-    <div className="group relative flex flex-col rounded-3xl border border-stone-200/90 bg-white p-4 shadow-2xs hover:shadow-xl hover:border-amber-700/30 transition-all duration-300">
+    <article
+      itemScope
+      itemType="https://schema.org/Product"
+      className="group relative flex flex-col rounded-2xl border border-[#E8E6E1] bg-white p-4 shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] hover:border-[#141312]/20 transition-all duration-300"
+    >
       {/* Top Image Container */}
-      <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-[#F6F1EA]">
+      <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-[#F5F4F0]">
         <img
+          itemProp="image"
           src={product.image}
-          alt={product.title}
+          alt={`${product.title} - Curated Shopee review by Tajie`}
           loading="lazy"
-          className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+          className="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
         />
 
         {/* Top Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1 items-start z-10">
+        <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 items-start z-10">
           {product.badge && (
-            <span
-              className={`rounded-full px-2.5 py-0.5 text-[0.625rem] tracking-wide border shadow-2xs ${
-                badgeStyles[product.badge] ?? 'bg-stone-900 text-white font-bold'
-              }`}
-            >
+            <span className="rounded-full bg-[#141312]/90 backdrop-blur-md text-[#FAF9F6] px-2.5 py-0.5 text-[0.5625rem] font-semibold tracking-wider uppercase shadow-xs">
               {product.badge}
             </span>
           )}
           {product.discountPercentage > 0 && (
-            <span className="rounded-full bg-[#C8522C] px-2 py-0.5 text-[0.625rem] font-black text-white shadow-2xs">
-              -{product.discountPercentage}%
+            <span className="rounded-full bg-[#9B381E] text-white px-2 py-0.5 text-[0.5625rem] font-bold tracking-tight shadow-xs">
+              -{product.discountPercentage}% OFF
             </span>
           )}
         </div>
@@ -89,14 +80,15 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
             e.stopPropagation();
             toggleWishlist(product.id);
           }}
-          className={`absolute top-3 right-3 z-20 h-8 w-8 rounded-full grid place-items-center transition-all cursor-pointer shadow-xs ${
+          className={`absolute top-2.5 right-2.5 z-20 h-8 w-8 rounded-full grid place-items-center transition-all cursor-pointer shadow-xs ${
             isWishlisted
               ? 'bg-rose-50 text-rose-600 border border-rose-200 scale-105'
-              : 'bg-white/80 backdrop-blur-xs text-stone-500 hover:text-rose-600 hover:bg-white'
+              : 'bg-white/90 backdrop-blur-xs text-neutral-500 hover:text-rose-600 hover:bg-white'
           }`}
-          title={isWishlisted ? 'Remove from wishlist' : 'Save to Cozy Bag'}
+          title={isWishlisted ? 'Remove from wishlist' : 'Save to Curated Bag'}
+          aria-label={isWishlisted ? 'Remove from wishlist' : 'Save to wishlist'}
         >
-          <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-rose-600 text-rose-600' : ''}`} />
+          <Heart className={`h-3.5 w-3.5 ${isWishlisted ? 'fill-rose-600 text-rose-600' : ''}`} />
         </button>
 
         {/* Quick View Hover Button */}
@@ -104,10 +96,10 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
           <button
             type="button"
             onClick={() => onQuickView(product)}
-            className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-stone-900/80 hover:bg-stone-900 text-white text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-md backdrop-blur-xs cursor-pointer"
+            className="absolute bottom-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity bg-[#141312]/90 hover:bg-[#141312] text-white text-[0.6875rem] font-medium px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-md backdrop-blur-xs cursor-pointer"
           >
-            <Eye className="h-3.5 w-3.5" />
-            <span>Quick View</span>
+            <Eye className="h-3 w-3" />
+            <span>Dossier Specs</span>
           </button>
         )}
       </div>
@@ -115,28 +107,31 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
       {/* Product Info */}
       <div className="mt-3.5 flex flex-1 flex-col justify-between">
         <div>
-          {/* Category & Ratings */}
-          <div className="flex items-center justify-between text-xs text-stone-500 mb-1.5">
-            <span className="text-[0.6875rem] font-bold text-[#C8522C] uppercase tracking-wider">
+          {/* Category & Ratings Micro-Bar */}
+          <div className="flex items-center justify-between text-xs text-neutral-400 mb-1.5">
+            <span className="text-[0.625rem] font-semibold tracking-widest uppercase text-[#9B381E]">
               {product.subCategory ?? product.category}
             </span>
-            <div className="flex items-center gap-1 font-semibold text-stone-700">
-              <Star className="h-3 w-3 fill-amber-500 text-amber-500" />
-              <span className="text-xs">{product.rating}</span>
-              <span className="text-[0.625rem] text-stone-400">({product.salesCount})</span>
+            <div className="flex items-center gap-1 text-neutral-700">
+              <Star className="h-3 w-3 fill-[#B89358] text-[#B89358]" />
+              <span className="text-xs font-semibold">{product.rating}</span>
+              <span className="text-[0.625rem] text-neutral-400">({product.salesCount})</span>
             </div>
           </div>
 
           {/* Title */}
-          <h3 className="font-bold text-sm text-stone-900 line-clamp-2 leading-snug group-hover:text-[#C8522C] transition-colors">
+          <h3
+            itemProp="name"
+            className="font-medium text-xs sm:text-sm text-[#141312] line-clamp-2 leading-snug group-hover:text-[#9B381E] transition-colors"
+          >
             {product.title}
           </h3>
 
-          {/* Tajie Honest Review Snippet */}
+          {/* Editorial Note Quote */}
           {product.reviewQuote && (
-            <div className="mt-2.5 rounded-xl bg-[#FAF6F0] border border-[#EBE3D7] p-2 text-[0.6875rem] italic text-stone-700 leading-snug">
-              <span className="font-bold not-italic text-stone-900 block text-[0.625rem]">
-                💬 Tajie's Note:
+            <div className="mt-2.5 rounded-lg bg-[#FAF9F6] border-l-2 border-[#B89358] p-2 text-[0.6875rem] italic text-neutral-600 leading-snug font-serif">
+              <span className="not-italic font-sans font-semibold text-[#141312] block text-[0.5625rem] uppercase tracking-wider mb-0.5">
+                Curator Verdict:
               </span>
               "{product.reviewQuote}"
             </div>
@@ -144,23 +139,21 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
         </div>
 
         {/* Price & Actions Row */}
-        <div className="mt-4 pt-3 border-t border-stone-100">
+        <div className="mt-4 pt-3 border-t border-[#E8E6E1]/80">
           <div className="flex items-baseline justify-between gap-1 mb-2.5">
             <div className="flex items-baseline gap-1.5">
-              <span className="font-extrabold text-lg sm:text-xl text-[#C8522C] tracking-tight">
+              <span className="font-bold text-base sm:text-lg text-[#141312] tracking-tight">
                 {formatPHP(product.price)}
               </span>
               {product.originalPrice > product.price && (
-                <span className="text-xs text-stone-400 line-through">
+                <span className="text-xs text-neutral-400 line-through font-normal">
                   {formatPHP(product.originalPrice)}
                 </span>
               )}
             </div>
-            {product.isGlitchPrice && (
-              <span className="inline-flex items-center gap-0.5 text-[0.625rem] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded-md">
-                <Sparkles className="h-2.5 w-2.5" /> Glitch Price
-              </span>
-            )}
+            <span className="inline-flex items-center gap-1 text-[0.5625rem] font-medium uppercase tracking-wider text-emerald-800 bg-emerald-50 border border-emerald-200/60 px-1.5 py-0.5 rounded">
+              <ShieldCheck className="h-2.5 w-2.5" /> Shopee Mall/Star
+            </span>
           </div>
 
           {/* Action CTAs */}
@@ -170,27 +163,27 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
               target="_blank"
               rel="noreferrer"
               onClick={handleAffiliateClick}
-              className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#C8522C] hover:bg-[#B34420] text-white text-xs font-bold py-2.5 px-3 shadow-xs transition-transform hover:scale-[1.02] cursor-pointer"
+              className="flex-1 inline-flex items-center justify-center gap-1 rounded-xl bg-[#141312] hover:bg-[#262524] text-white text-xs font-semibold py-2.5 px-3 shadow-xs transition-all hover:scale-[1.01] cursor-pointer"
             >
-              <span>View on Shopee</span>
-              <ExternalLink className="h-3 w-3" />
+              <span>Check Deal on Shopee</span>
+              <ArrowUpRight className="h-3.5 w-3.5" />
             </a>
 
             <button
               type="button"
               onClick={handleCopyLink}
-              title="Copy direct share link"
+              title="Copy verified direct share link"
               className={`h-9 w-9 rounded-xl border grid place-items-center transition-colors cursor-pointer shrink-0 ${
                 copied
-                  ? 'border-emerald-500 bg-emerald-50 text-emerald-600'
-                  : 'border-stone-200 bg-stone-50 text-stone-600 hover:bg-stone-100 hover:text-stone-900'
+                  ? 'border-emerald-600 bg-emerald-50 text-emerald-600'
+                  : 'border-[#E8E6E1] bg-white text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
               }`}
             >
-              {copied ? <Check className="h-4 w-4" /> : <Share2 className="h-3.5 w-3.5" />}
+              {copied ? <Check className="h-3.5 w-3.5" /> : <Share2 className="h-3.5 w-3.5" />}
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </article>
   );
 }

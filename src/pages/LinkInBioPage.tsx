@@ -1,13 +1,12 @@
 ﻿import { useMemo, useState } from 'react';
 import {
   Check,
-  ExternalLink,
   Globe,
   Search,
   Share2,
-  Sparkles,
   Star,
   Ticket,
+  ArrowUpRight,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -45,60 +44,60 @@ export function LinkInBioPage() {
     navigator.clipboard.writeText(window.location.href);
     setCopiedLink(true);
     confetti({
-      particleCount: 30,
-      spread: 60,
+      particleCount: 25,
+      spread: 50,
     });
     setTimeout(() => setCopiedLink(false), 2000);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#FAF7F2] via-[#F3ECE2] to-[#E8DDD0] pb-16 pt-8 px-4 text-stone-900">
+    <div className="min-h-screen bg-[#141312] pb-20 pt-8 px-4 text-[#FAF9F6] font-sans">
       <SEO
-        title="Tajie's Shopee Links | TikTok & Instagram Bio"
-        description="Direct Shopee links from Tajie's TikTok & Instagram videos. Tap to shop viral budol finds & discount vouchers."
+        title="Tajie Studio Links | TikTok & Instagram Curated Vault"
+        description="Direct Shopee product deep links from Tajie Studio TikTok and Instagram showcases. 100% verified Mall & Star merchants."
       />
 
       <div className="max-w-md mx-auto">
         {/* Profile Card Header */}
-        <div className="relative rounded-3xl bg-white/90 backdrop-blur-md p-6 text-center shadow-lg border border-stone-200/80">
+        <div className="relative rounded-3xl bg-[#1E1C1A] p-6 text-center shadow-2xl border border-neutral-800">
           <button
             type="button"
             onClick={handleShareBio}
-            className="absolute top-4 right-4 h-8 w-8 rounded-full bg-stone-100 grid place-items-center text-stone-600 hover:bg-stone-200 transition-colors cursor-pointer"
+            className="absolute top-4 right-4 h-8 w-8 rounded-full bg-white/10 grid place-items-center text-neutral-300 hover:bg-white/20 transition-colors cursor-pointer"
             title="Share profile link"
           >
-            {copiedLink ? <Check className="h-4 w-4 text-emerald-600" /> : <Share2 className="h-4 w-4" />}
+            {copiedLink ? <Check className="h-4 w-4 text-emerald-400" /> : <Share2 className="h-4 w-4" />}
           </button>
 
-          {/* Avatar / Brand Icon */}
-          <div className="mx-auto h-20 w-20 rounded-full bg-gradient-to-tr from-[#C8522C] to-amber-500 p-1 shadow-md">
-            <div className="h-full w-full rounded-full bg-[#FAF7F2] grid place-items-center font-black text-2xl text-[#C8522C]">
-              TJ
-            </div>
+          {/* Monogram Avatar */}
+          <div className="mx-auto h-20 w-20 rounded-2xl bg-white text-[#141312] grid place-items-center font-serif font-bold text-3xl shadow-xl">
+            T
           </div>
 
-          <h1 className="mt-3 text-xl font-extrabold text-stone-900 flex items-center justify-center gap-1.5">
-            Tajie's Sulit Deals <Sparkles className="h-4 w-4 text-amber-500 fill-amber-500" />
+          <h1 className="mt-4 font-serif text-xl sm:text-2xl font-bold text-white flex items-center justify-center gap-1.5">
+            Tajie <span className="font-normal italic text-neutral-400">Studio</span>
           </h1>
-          <p className="text-xs font-bold text-[#C8522C]">@tajiedeals · Shopee Tech & Home Aesthetics</p>
-          <p className="mt-2 text-xs text-stone-600 leading-relaxed">
-            Tap any product below to jump directly to the verified Shopee seller page! 🛍️✨
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#B89358]">
+            @tajiedeals · Verified Shopee Curator
+          </p>
+          <p className="mt-2 text-xs text-neutral-400 leading-relaxed max-w-xs mx-auto">
+            Direct verified Shopee deep links featured in our TikTok reviews. Tap any piece to jump straight to the merchant.
           </p>
 
-          {/* Social Quick Links */}
-          <div className="mt-4 flex items-center justify-center gap-2 pt-3 border-t border-stone-100">
+          {/* Quick Buttons */}
+          <div className="mt-4 flex items-center justify-center gap-2 pt-3 border-t border-neutral-800">
             <a
               href="https://shopee.ph/m/vouchers"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1 rounded-full bg-amber-100/80 text-amber-900 border border-amber-300 px-3 py-1 text-xs font-bold hover:bg-amber-200 transition-colors"
+              className="inline-flex items-center gap-1 rounded-full bg-[#B89358]/20 text-[#B89358] border border-[#B89358]/40 px-3 py-1 text-xs font-semibold hover:bg-[#B89358]/30 transition-colors"
             >
               <Ticket className="h-3 w-3" />
-              <span>Claim Shopee Vouchers</span>
+              <span>Shopee Vouchers</span>
             </a>
             <Link
               to="/"
-              className="inline-flex items-center gap-1 rounded-full bg-stone-100 text-stone-700 px-3 py-1 text-xs font-bold hover:bg-stone-200 transition-colors"
+              className="inline-flex items-center gap-1 rounded-full bg-white/10 text-neutral-200 px-3 py-1 text-xs font-semibold hover:bg-white/20 transition-colors"
             >
               <Globe className="h-3 w-3" />
               <span>Full Website</span>
@@ -109,32 +108,32 @@ export function LinkInBioPage() {
         {/* Quick Search */}
         <div className="mt-4">
           <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search product from video..."
-              className="w-full rounded-2xl bg-white border border-stone-200/90 py-3 pl-10 pr-4 text-xs font-bold text-stone-900 placeholder:text-stone-400 shadow-sm focus:outline-hidden focus:ring-2 focus:ring-[#C8522C]"
+              className="w-full rounded-2xl bg-[#1E1C1A] border border-neutral-800 py-3 pl-10 pr-4 text-xs font-medium text-white placeholder:text-neutral-500 shadow-sm focus:outline-hidden focus:ring-1 focus:ring-[#B89358]"
             />
           </div>
 
           {/* Fast Filters */}
           <div className="mt-2.5 flex items-center gap-1.5 overflow-x-auto pb-1">
             {[
-              { label: 'All Items', val: null },
-              { label: '🔥 Viral', val: 'Viral' },
-              { label: '⚡ Glitch Prices', val: 'Glitches' },
-              { label: '💸 Under ₱299', val: 'Under ₱299' },
+              { label: 'All Pieces', val: null },
+              { label: '🔥 Viral Grails', val: 'Viral' },
+              { label: '⚡ Glitch Deals', val: 'Glitches' },
+              { label: '💸 Sub-₱300', val: 'Under ₱299' },
             ].map((f) => (
               <button
                 key={f.label}
                 type="button"
                 onClick={() => setSelectedTag(f.val)}
-                className={`rounded-full px-3 py-1 text-[0.6875rem] font-bold whitespace-nowrap transition-all shadow-2xs cursor-pointer ${
+                className={`rounded-full px-3 py-1 text-[0.6875rem] font-semibold whitespace-nowrap transition-all cursor-pointer ${
                   selectedTag === f.val
-                    ? 'bg-stone-900 text-white'
-                    : 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-100'
+                    ? 'bg-white text-[#141312]'
+                    : 'bg-[#1E1C1A] border border-neutral-800 text-neutral-400 hover:text-white'
                 }`}
               >
                 {f.label}
@@ -143,8 +142,8 @@ export function LinkInBioPage() {
           </div>
         </div>
 
-        {/* Vertical Product List for Link-in-Bio */}
-        <div className="mt-4 space-y-3">
+        {/* Vertical Product List */}
+        <div className="mt-4 space-y-2.5">
           {filtered.map((product) => (
             <a
               key={product.id}
@@ -152,17 +151,17 @@ export function LinkInBioPage() {
               target="_blank"
               rel="noreferrer"
               onClick={() => trackAffiliateClick(product.id)}
-              className="group flex items-center gap-3.5 rounded-2xl bg-white p-3.5 shadow-sm hover:shadow-md transition-all border border-stone-200/90 hover:border-[#C8522C]/40 cursor-pointer"
+              className="group flex items-center gap-3.5 rounded-2xl bg-[#1E1C1A] p-3 shadow-md hover:shadow-xl transition-all border border-neutral-800 hover:border-neutral-700 cursor-pointer"
             >
               {/* Product Thumbnail */}
-              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-stone-100">
+              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-neutral-900">
                 <img
                   src={product.image}
                   alt={product.title}
                   className="h-full w-full object-cover group-hover:scale-105 transition-transform"
                 />
                 {product.discountPercentage > 0 && (
-                  <span className="absolute top-1 left-1 rounded bg-[#C8522C] px-1 py-0.2 text-[0.5625rem] font-black text-white">
+                  <span className="absolute top-1 left-1 rounded bg-[#9B381E] px-1 py-0.2 text-[0.5625rem] font-bold text-white">
                     -{product.discountPercentage}%
                   </span>
                 )}
@@ -170,49 +169,48 @@ export function LinkInBioPage() {
 
               {/* Details */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1 text-[0.625rem] text-stone-500 font-bold uppercase">
-                  <span>{product.category}</span>
+                <div className="flex items-center gap-1 text-[0.5625rem] text-neutral-400 font-semibold uppercase tracking-wider">
+                  <span className="text-[#B89358]">{product.category}</span>
                   <span>·</span>
-                  <span className="flex items-center text-amber-600 font-bold">
-                    <Star className="h-2.5 w-2.5 fill-amber-500" /> {product.rating}
+                  <span className="flex items-center text-amber-400">
+                    <Star className="h-2.5 w-2.5 fill-amber-400" /> {product.rating}
                   </span>
                 </div>
 
-                <h3 className="font-bold text-xs text-stone-900 truncate group-hover:text-[#C8522C] transition-colors">
+                <h3 className="font-semibold text-xs text-neutral-100 truncate group-hover:text-[#B89358] transition-colors">
                   {product.title}
                 </h3>
 
                 <div className="mt-1 flex items-baseline gap-1.5">
-                  <span className="font-extrabold text-sm text-[#C8522C]">
+                  <span className="font-bold text-sm text-white">
                     {formatPHP(product.price)}
                   </span>
                   {product.originalPrice > product.price && (
-                    <span className="text-[0.625rem] text-stone-400 line-through">
+                    <span className="text-[0.625rem] text-neutral-500 line-through">
                       {formatPHP(product.originalPrice)}
                     </span>
                   )}
                 </div>
               </div>
 
-              {/* Action Button */}
+              {/* Action */}
               <div className="shrink-0">
-                <span className="inline-flex h-8 items-center gap-1 rounded-xl bg-[#C8522C] text-white px-2.5 text-[0.6875rem] font-bold shadow-2xs group-hover:bg-[#B34420] transition-colors">
-                  <span>Shopee</span>
-                  <ExternalLink className="h-3 w-3" />
+                <span className="inline-flex h-8 w-8 rounded-xl bg-white text-[#141312] items-center justify-center group-hover:bg-[#B89358] group-hover:text-white transition-colors">
+                  <ArrowUpRight className="h-4 w-4" />
                 </span>
               </div>
             </a>
           ))}
         </div>
 
-        {/* Bottom Home Link */}
+        {/* Bottom Link */}
         <div className="mt-8 text-center">
           <Link
             to="/"
-            className="inline-flex items-center gap-1.5 rounded-full bg-stone-900 text-white text-xs font-bold px-4 py-2 hover:bg-black transition-all shadow-sm"
+            className="inline-flex items-center gap-1.5 rounded-full bg-white text-[#141312] text-xs font-semibold px-4 py-2 hover:bg-neutral-200 transition-all shadow-md"
           >
-            <span>Explore Full Website & Lookbooks</span>
-            <ExternalLink className="h-3.5 w-3.5" />
+            <span>Explore Full Catalog & Lookbooks</span>
+            <ArrowUpRight className="h-3.5 w-3.5" />
           </Link>
         </div>
       </div>

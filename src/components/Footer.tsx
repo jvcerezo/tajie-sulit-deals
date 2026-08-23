@@ -1,77 +1,86 @@
 ﻿import { Link } from 'react-router-dom';
-import { Coffee, Heart, ShieldCheck, Sparkles, Ticket } from 'lucide-react';
+import { ShieldCheck, Ticket } from 'lucide-react';
 
 export function Footer() {
   return (
-    <footer className="border-t border-[#E5DBCC] bg-[#211D1A] text-[#FAF7F2]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {/* Brand Col */}
+    <footer className="border-t border-neutral-800 bg-[#141312] text-[#FAF9F6] font-sans">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Brand Column */}
           <div className="space-y-4 sm:col-span-2">
             <Link to="/" className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-[#C8522C] to-amber-500 text-white grid place-items-center">
-                <Coffee className="h-4.5 w-4.5" />
+              <div className="h-9 w-9 rounded-xl bg-white text-[#141312] grid place-items-center font-serif font-bold text-lg">
+                T
               </div>
-              <span className="font-extrabold text-xl tracking-tight text-[#FAF7F2] flex items-center gap-1.5">
-                Tajie's <span className="text-[#E07A5F]">Sulit Deals</span>
-                <Sparkles className="h-4 w-4 text-amber-400" />
+              <span className="font-serif font-bold text-xl tracking-tight text-white flex items-center gap-1.5">
+                Tajie <span className="font-normal italic text-neutral-400">Studio</span>
               </span>
             </Link>
-            <p className="text-xs text-stone-300 leading-relaxed max-w-md">
-              A cozy, personal vault for tested Shopee budol finds, viral TikTok mechanical keyboards, aesthetic desk setup upgrades, and verified Shopee discount vouchers.
+            <p className="text-xs text-neutral-400 leading-relaxed max-w-md">
+              The independent editorial guide to tested Shopee pre-built mechanical keyboards, ergonomic desk setups, home cafe essentials, and verified discount promo vouchers in the Philippines.
             </p>
-            <div className="flex items-center gap-2 text-xs text-stone-300">
+            <div className="flex items-center gap-2 text-xs text-neutral-300">
               <ShieldCheck className="h-4 w-4 text-emerald-400" />
-              <span>100% Tested & Verified Shopee Star/Mall Sellers</span>
+              <span>100% Star & Mall Verified Merchant Deep Links</span>
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Curated Directories */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-stone-400">Curated Spaces</h4>
-            <ul className="mt-3 space-y-2 text-xs text-stone-300">
+            <h4 className="text-[0.6875rem] font-bold uppercase tracking-widest text-[#B89358]">
+              Curated Directories
+            </h4>
+            <ul className="mt-4 space-y-2.5 text-xs text-neutral-400">
               <li>
-                <Link to="/?category=Tech+%26+Setup" className="hover:text-[#E07A5F] transition-colors">
-                  Minimalist Desk Setups
+                <Link to="/?category=Tech+%26+Setup" className="hover:text-white transition-colors">
+                  Minimalist Desk Fixtures
                 </Link>
               </li>
               <li>
-                <Link to="/?category=Kitchen+%26+Coffee" className="hover:text-[#E07A5F] transition-colors">
-                  Home Cafe & Coffee Gear
+                <Link to="/?category=Kitchen+%26+Coffee" className="hover:text-white transition-colors">
+                  Artisanal Home Cafe
                 </Link>
               </li>
               <li>
-                <Link to="/?category=Viral+TikTok" className="hover:text-[#E07A5F] transition-colors">
-                  TikTok Viral Must-Haves
+                <Link to="/?category=Viral+TikTok" className="hover:text-white transition-colors">
+                  TikTok Viral Tech Grails
                 </Link>
               </li>
               <li>
-                <Link to="/?price=under-299" className="hover:text-[#E07A5F] transition-colors">
-                  Under ₱299 Hidden Gems
+                <Link to="/?price=under-299" className="hover:text-white transition-colors">
+                  Sub-₱300 Hidden Value
                 </Link>
               </li>
               <li>
-                <Link to="/vouchers" className="hover:text-[#E07A5F] transition-colors flex items-center gap-1">
-                  <Ticket className="h-3 w-3 text-amber-400" /> Shopee Mega Vouchers
+                <Link to="/vouchers" className="hover:text-white transition-colors flex items-center gap-1">
+                  <Ticket className="h-3 w-3 text-[#B89358]" /> Shopee Mega Vouchers
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Affiliate Disclaimer */}
+          {/* Transparency & Disclaimer */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-stone-400">Affiliate Disclosure</h4>
-            <p className="mt-3 text-[0.6875rem] text-stone-400 leading-relaxed">
-              Tajie's Sulit Deals participates in the Shopee Affiliate Program. When you purchase through our links, we may earn a small creator commission at zero extra cost to you. This supports honest testing and deal curation!
+            <h4 className="text-[0.6875rem] font-bold uppercase tracking-widest text-[#B89358]">
+              Affiliate Disclosure
+            </h4>
+            <p className="mt-4 text-[0.6875rem] text-neutral-400 leading-relaxed">
+              Tajie Studio participates in the Shopee Affiliate Program. Outbound links on this publication may generate a small merchant commission at no supplementary cost to the purchaser. All reviews reflect genuine hands-on testing.
             </p>
           </div>
         </div>
 
-        <div className="mt-10 pt-6 border-t border-stone-800 flex flex-wrap items-center justify-between gap-4 text-xs text-stone-400">
-          <p>© {new Date().getFullYear()} Tajie's Sulit Deals. All rights reserved.</p>
-          <p className="flex items-center gap-1">
-            Handcrafted with <Heart className="h-3.5 w-3.5 text-[#E07A5F] fill-[#E07A5F]" /> for smart Shopee shoppers.
-          </p>
+        <div className="mt-12 pt-8 border-t border-neutral-800/80 flex flex-wrap items-center justify-between gap-4 text-xs text-neutral-500">
+          <p>© {new Date().getFullYear()} Tajie Studio. All rights reserved.</p>
+          <div className="flex items-center gap-4 text-neutral-400">
+            <Link to="/bio" className="hover:text-white transition-colors">TikTok Bio</Link>
+            <span>·</span>
+            <Link to="/collections" className="hover:text-white transition-colors">Lookbooks</Link>
+            <span>·</span>
+            <Link to="/vouchers" className="hover:text-white transition-colors">Vouchers</Link>
+            <span>·</span>
+            <Link to="/wishlist" className="hover:text-white transition-colors">Bag</Link>
+          </div>
         </div>
       </div>
     </footer>
