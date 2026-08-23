@@ -1,45 +1,55 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 @layer base {
   :root {
-    --shopee-orange: #ee4d2d;
-    --shopee-orange-hover: #d73211;
-    --shopee-orange-light: #fff5f1;
-    --shopee-dark: #121316;
+    --studio-cream: #FAF7F2;
+    --studio-sand: #F3ECE2;
+    --studio-espresso: #211D1A;
+    --studio-terracotta: #C8522C;
+    --studio-terracotta-hover: #B34420;
+    --studio-amber: #D97706;
+    --studio-sage: #4E6B56;
   }
 
   body {
-    @apply bg-slate-50 text-slate-900 antialiased selection:bg-orange-500 selection:text-white;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #FAF7F2;
+    color: #211D1A;
+    font-family: -apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: #C8522C;
+    color: #FFFFFF;
   }
 }
 
-/* Custom glowing and animated badges */
+/* Subtle warm ambient animations */
 @keyframes pulse-subtle {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.85; transform: scale(1.03); }
+  50% { opacity: 0.88; transform: scale(1.02); }
 }
 
 .animate-pulse-subtle {
-  animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: pulse-subtle 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Custom scrollbars */
+/* Warm cozy scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #F3ECE2;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(156, 163, 175, 0.5);
+  background: #D5C8B8;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(107, 114, 128, 0.8);
+  background: #B8A692;
 }
-
