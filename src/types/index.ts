@@ -1,4 +1,4 @@
-export type Category =
+﻿export type Category =
   | 'All'
   | 'Tech & Setup'
   | 'Home & Living'
@@ -43,6 +43,10 @@ export interface Product {
   specs?: Record<string, string>;
   addedDate: string;
   clicksCount?: number;
+  rank?: number;
+  rankRole?: string;
+  whyRanked?: string;
+  bestFor?: string;
 }
 
 export interface Voucher {

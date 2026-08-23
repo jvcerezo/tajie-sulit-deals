@@ -1,394 +1,430 @@
-﻿import { useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+﻿import { useState, useMemo } from 'react';
 import {
-  ArrowRight,
-  Compass,
-  Search,
-  Sparkles,
-  Ticket,
+  ArrowUpRight,
+  Check,
   ChevronDown,
+  Copy,
+  Heart,
+  Laptop,
+  Coffee,
+  Sparkles,
+  PiggyBank,
   ShieldCheck,
+  Star,
   Award,
+  Ticket,
 } from 'lucide-react';
+import confetti from 'canvas-confetti';
 
-import { useProducts } from '@/lib/storage';
-import { VOUCHERS } from '@/data/vouchers';
-import { COLLECTIONS } from '@/data/collections';
-import type { Category, PriceFilterRange, Product, SortOption } from '@/types';
-import { ProductCard } from '@/components/ProductCard';
-import { VoucherCard } from '@/components/VoucherCard';
-import { QuickViewModal } from '@/components/QuickViewModal';
-import { CozyMatchmaker } from '@/components/CozyMatchmaker';
+import { PRODUCTS } from '@/data/products';
+import type { Product } from '@/types';
+import { formatPHP } from '@/lib/format';
+import { trackAffiliateClick } from '@/lib/analytics';
+import { useWishlist, toggleWishlist } from '@/lib/storage';
 import { SEO } from '@/components/SEO';
-import { Link } from 'react-router-dom';
+import { QuickViewModal } from '@/components/QuickViewModal';
 
-const CATEGORIES: Category[] = [
-  'All',
-  'Tech & Setup',
-  'Home & Living',
-  'Kitchen & Coffee',
-  'Fashion & Accessories',
-  'Viral TikTok',
+interface CategoryTab {
+  id: string;
+  name: string;
+  subtitle: string;
+  icon: typeof Laptop;
+  filterFn: (p: Product) => boolean;
+}
+
+const CATEGORY_TABS: CategoryTab[] = [
+  {
+    id: 'desk',
+    name: 'Top 5 Desk & Setup',
+    subtitle: 'Mechanical keyboards, lighting & workspace ergonomics',
+    icon: Laptop,
+    filterFn: (p) => p.category === 'Tech & Setup',
+  },
+  {
+    id: 'coffee',
+    name: 'Top 5 Home Cafe & Coffee',
+    subtitle: 'Precision grinders, portable espresso & barista gear',
+    icon: Coffee,
+    filterFn: (p) => p.category === 'Kitchen & Coffee',
+  },
+  {
+    id: 'living',
+    name: 'Top 5 Room & Lifestyle',
+    subtitle: 'Aroma diffusers, orthopedic cushions & ambient lights',
+    icon: Sparkles,
+    filterFn: (p) => p.category === 'Home & Living',
+  },
+  {
+    id: 'under300',
+    name: 'Top 5 Sub-₱300 Hidden Gems',
+    subtitle: 'Dangerously cheap items with 5x perceived quality',
+    icon: PiggyBank,
+    filterFn: (p) => (p.price <= 300 && p.tags.includes('Under ₱299 💸')) || p.id.includes('sub300'),
+  },
 ];
 
 const HOMEPAGE_FAQS = [
   {
-    question: 'How are Shopee items curated on Tajie Studio?',
+    question: 'Why only 5 products per category?',
     answer:
-      'Every product featured on Tajie Studio undergoes a strict vetting benchmark: 1) Star or Mall seller authentication to avoid counterfeits, 2) Sentiment analysis across thousands of verified customer reviews, 3) Physical acoustic and build quality testing for keyboards and desk lighting, and 4) Highest discount-to-price ratio in the Philippine market.',
+      'Online shopping is broken because marketplaces force you to scroll through hundreds of fake reviews and counterfeit clones. We eliminate decision fatigue by testing and handpicking only the undisputed Top 5 benchmark products in each category.',
   },
   {
-    question: 'What is the best creamy sounding mechanical keyboard on Shopee under ₱2,500?',
+    question: 'What makes the #1 ranked item win in each category?',
     answer:
-      'The AULA F75 Wireless Mechanical Keyboard (TTC Reaper Switches) is our highest-rated pre-built keyboard for 2026. With 5-layer sound dampening, a gasket-mount structure, and pre-lubed switches straight out of the box, it outperforms keyboards that cost three times as much.',
+      'Our #1 overall pick represents the highest acoustic/build benchmark, lowest failure rate, and best overall user sentiment across verified Shopee Star/Mall merchants.',
   },
   {
-    question: 'How do I stack Shopee discount vouchers with ₱0 minimum spend free shipping?',
+    question: 'How do I stack Shopee discount vouchers with free shipping?',
     answer:
-      'In the Shopee App checkout screen, you can combine: 1) One Shopee Platform Mega Voucher (up to 15% OFF capped at ₱1,000), 2) One Free Shipping Voucher (₱0 Min. Spend), and 3) One Shop/Store Follower Voucher to achieve maximum combined savings.',
+      'In the Shopee App checkout screen, combine 1 Shopee Platform Mega Voucher (up to 15% OFF) + 1 Free Shipping Voucher (₱0 Min. Spend) + 1 Shop Follower Voucher to achieve maximum combined savings.',
   },
   {
-    question: 'Are all product links safe and direct to Shopee Philippines?',
+    question: 'Are all links direct to verified Shopee merchants?',
     answer:
-      'Yes. Every outbound link forwards directly to official Shopee Philippines listings with verified seller credentials, COD availability, and Shopee Guarantee return protection.',
-  },
-  {
-    question: 'How often are Shopee voucher promo codes updated?',
-    answer:
-      'Our voucher hub is refreshed daily to capture midnight flash drops, Payday sales, Double Digit promotions (9.9, 10.10, 11.11, 12.12), and active 0% SPayLater merchant offers.',
+      'Yes. Every single outbound link routes straight to official Shopee Philippines Star or Mall sellers with active COD, official return policies, and Shopee Guarantee protection.',
   },
 ];
 
 export function HomePage() {
-  const products = useProducts();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const initialCategory = (searchParams.get('category') as Category) || 'All';
-  const initialPrice = (searchParams.get('price') as PriceFilterRange) || 'all';
-
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<Category>(initialCategory);
-  const [selectedPrice, setSelectedPrice] = useState<PriceFilterRange>(initialPrice);
-  const [sortOption, setSortOption] = useState<SortOption>('popular');
+  const [activeTab, setActiveTab] = useState<string>('desk');
+  const [copiedVoucher, setCopiedVoucher] = useState<string | null>(null);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
-  // Filtered & Sorted Products
-  const filteredProducts = useMemo(() => {
-    return products.filter((item) => {
-      // Search
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
-        const matchesTitle = item.title.toLowerCase().includes(q);
-        const matchesTagline = item.tagline.toLowerCase().includes(q);
-        const matchesTags = item.tags.some((t) => t.toLowerCase().includes(q));
-        const matchesCategory = item.category.toLowerCase().includes(q);
-        if (!matchesTitle && !matchesTagline && !matchesTags && !matchesCategory) {
-          return false;
-        }
-      }
+  const wishlist = useWishlist();
 
-      // Category
-      if (selectedCategory !== 'All') {
-        if (selectedCategory === 'Viral TikTok' && !item.isTikTokViral) return false;
-        if (selectedCategory !== 'Viral TikTok' && item.category !== selectedCategory) {
-          return false;
-        }
-      }
+  const currentTab = CATEGORY_TABS.find((t) => t.id === activeTab) ?? CATEGORY_TABS[0];
 
-      // Price Filter
-      if (selectedPrice === 'under-299' && item.price > 299) return false;
-      if (selectedPrice === '300-999' && (item.price < 300 || item.price > 999)) return false;
-      if (selectedPrice === '1000-2499' && (item.price < 1000 || item.price > 2499)) return false;
-      if (selectedPrice === '2500-plus' && item.price < 2500) return false;
+  // Exactly Top 5 ranked products for the selected category
+  const top5Products = useMemo(() => {
+    return PRODUCTS.filter(currentTab.filterFn)
+      .sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99))
+      .slice(0, 5);
+  }, [currentTab]);
 
-      return true;
-    }).sort((a, b) => {
-      if (sortOption === 'popular') {
-        return b.reviewCount - a.reviewCount;
-      }
-      if (sortOption === 'discount-high') {
-        return b.discountPercentage - a.discountPercentage;
-      }
-      if (sortOption === 'price-low') {
-        return a.price - b.price;
-      }
-      if (sortOption === 'price-high') {
-        return b.price - a.price;
-      }
-      if (sortOption === 'rating') {
-        return b.rating - a.rating;
-      }
-      if (sortOption === 'newest') {
-        return new Date(b.addedDate).getTime() - new Date(a.addedDate).getTime();
-      }
-      return 0;
+  const handleCopyVoucher = (code: string) => {
+    navigator.clipboard.writeText(code);
+    setCopiedVoucher(code);
+    confetti({
+      particleCount: 25,
+      spread: 50,
+      origin: { y: 0.7 },
     });
-  }, [products, searchQuery, selectedCategory, selectedPrice, sortOption]);
-
-  const handleCategoryClick = (cat: Category) => {
-    setSelectedCategory(cat);
-    const newParams = new URLSearchParams(searchParams);
-    if (cat === 'All') {
-      newParams.delete('category');
-    } else {
-      newParams.set('category', cat);
-    }
-    setSearchParams(newParams);
+    setTimeout(() => setCopiedVoucher(null), 2500);
   };
 
   return (
-    <div className="bg-[#FAF9F6] min-h-screen text-[#141312] pb-24">
+    <div className="bg-[#FAF9F6] min-h-screen text-[#141312] pb-24 font-sans">
       <SEO
-        title="Tajie Studio — Curated Shopee Budol Finds & Verified Tech Vault"
-        description="The independent editorial authority on tested Shopee mechanical keyboards, minimalist WFH desk setups, home cafe tools, and verified discount promo vouchers in the Philippines."
-        products={products}
+        title="Tajie Studio — Top 5 Handpicked Shopee Finds (Zero Bloat)"
+        description="Stop doom-scrolling 500 Shopee pages. We test and rank the definitive Top 5 mechanical keyboards, desk setups, home cafe tools, and under-₱300 hidden gems."
+        products={PRODUCTS}
         faqs={HOMEPAGE_FAQS}
         breadcrumbs={[
           { name: 'Home', item: 'https://tajiedeals.vercel.app/' },
-          { name: 'Curated Catalog', item: 'https://tajiedeals.vercel.app/#all-finds' },
+          { name: currentTab.name, item: `https://tajiedeals.vercel.app/#${currentTab.id}` },
         ]}
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 space-y-16">
-        {/* Luxury Hero Header */}
-        <header className="relative border-b border-[#E8E6E1] pb-12">
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
-            <div className="max-w-3xl">
-              <div className="inline-flex items-center gap-2 rounded-full bg-white border border-[#E8E6E1] px-3.5 py-1 text-[0.625rem] font-semibold uppercase tracking-widest text-neutral-600 shadow-2xs font-sans mb-4">
-                <Award className="h-3 w-3 text-[#B89358]" />
-                <span>Independent Shopee Testing & Curation</span>
-              </div>
-              <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#141312] leading-[1.1]">
-                The Independent Guide to <br className="hidden sm:block" />
-                <span className="italic font-normal text-[#9B381E]">Shopee Excellence.</span>
-              </h1>
-              <p className="mt-4 text-xs sm:text-sm md:text-base text-neutral-600 max-w-2xl leading-relaxed font-sans font-normal">
-                Rigorous testing of pre-built mechanical keyboards, ergonomic workspace fixtures, and home cafe gear. Verified Star & Mall merchant links, real acoustic recordings, and zero low-grade clones.
-              </p>
-            </div>
+      {/* Main Container */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-10 space-y-12">
+        {/* Streamlined Hero */}
+        <header className="text-center max-w-3xl mx-auto space-y-4">
+          <div className="inline-flex items-center gap-2 rounded-full bg-white border border-[#E8E6E1] px-4 py-1 text-[0.6875rem] font-semibold tracking-wider uppercase text-neutral-600 shadow-2xs">
+            <Award className="h-3.5 w-3.5 text-[#B89358]" />
+            <span>The Anti-Doomscroll Shopee Guide</span>
+          </div>
 
-            <div className="flex items-center gap-3 shrink-0">
-              <div className="flex items-center gap-2 rounded-2xl bg-white border border-[#E8E6E1] p-3 shadow-2xs">
-                <ShieldCheck className="h-5 w-5 text-emerald-600 shrink-0" />
-                <div className="text-[0.6875rem] font-sans">
-                  <strong className="block text-[#141312] font-semibold">100% Mall & Star Verified</strong>
-                  <span className="text-neutral-500">Official Shopee Guarantee</span>
-                </div>
-              </div>
+          <h1 className="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-[#141312] leading-[1.15]">
+            Only the <span className="italic font-normal text-[#9B381E]">Top 5</span> in Every Category. <br className="hidden sm:block" />
+            Pick in 30 Seconds.
+          </h1>
+
+          <p className="text-xs sm:text-sm text-neutral-600 max-w-xl mx-auto leading-relaxed">
+            Online shopping has become an endless scroll of 10,000 low-quality clones. We test, filter, and rank the exact <strong>5 best pieces</strong> worth your money. Zero fluff.
+          </p>
+
+          {/* Quick Active Voucher Banner */}
+          <div className="mt-4 inline-flex flex-wrap items-center justify-center gap-2 rounded-2xl bg-white border border-[#E8E6E1] p-2 sm:px-4 sm:py-2 text-xs shadow-2xs">
+            <div className="flex items-center gap-1.5 text-neutral-700 font-medium">
+              <Ticket className="h-3.5 w-3.5 text-[#9B381E]" />
+              <span>Today's Voucher:</span>
+              <strong className="text-[#141312] font-mono bg-neutral-100 px-1.5 py-0.5 rounded">
+                MEGA15OFF
+              </strong>
             </div>
+            <button
+              type="button"
+              onClick={() => handleCopyVoucher('MEGA15OFF')}
+              className={`inline-flex items-center gap-1 rounded-xl px-2.5 py-1 text-[0.6875rem] font-semibold transition-colors cursor-pointer ${
+                copiedVoucher === 'MEGA15OFF'
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-[#141312] hover:bg-[#262524] text-white'
+              }`}
+            >
+              {copiedVoucher === 'MEGA15OFF' ? (
+                <>
+                  <Check className="h-3 w-3" />
+                  <span>Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="h-3 w-3" />
+                  <span>Copy Code</span>
+                </>
+              )}
+            </button>
           </div>
         </header>
 
-        {/* 1. Interactive Concierge Engine */}
-        <section id="matchmaker">
-          <CozyMatchmaker onProductClick={(p) => setQuickViewProduct(p)} />
-        </section>
-
-        {/* 2. Curated Themed Lookbooks Showcase */}
-        <section aria-labelledby="lookbooks-heading" className="space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-[#E8E6E1] pb-4">
-            <div>
-              <div className="flex items-center gap-2">
-                <Compass className="h-4 w-4 text-[#9B381E]" />
-                <h2 id="lookbooks-heading" className="font-serif text-2xl sm:text-3xl font-bold text-[#141312] tracking-tight">
-                  Curated Themed Lookbooks
-                </h2>
-              </div>
-              <p className="text-xs text-neutral-500 font-sans mt-0.5">
-                Complete aesthetic setups tested for spatial harmony and acoustic synergy.
-              </p>
-            </div>
-            <Link
-              to="/collections"
-              className="inline-flex items-center gap-1 text-xs font-semibold text-[#141312] hover:text-[#9B381E] transition-colors font-sans"
-            >
-              <span>Explore all lookbooks</span>
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          </div>
-
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {COLLECTIONS.slice(0, 3).map((col) => (
-              <Link
-                key={col.id}
-                to={`/collections/${col.slug}`}
-                className="group relative overflow-hidden rounded-2xl bg-white border border-[#E8E6E1] shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] hover:border-[#141312]/20 transition-all duration-300 flex flex-col"
-              >
-                <div className="relative aspect-video w-full overflow-hidden bg-neutral-900">
-                  <img
-                    src={col.bannerImage}
-                    alt={`${col.title} lookbook on Shopee`}
-                    className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  <div className="absolute bottom-3 left-3 right-3 text-white">
-                    <span className="rounded-full bg-white/20 backdrop-blur-md text-white text-[0.5625rem] font-semibold uppercase tracking-wider px-2 py-0.5 border border-white/20">
-                      {col.productIds.length} Verified Pieces
-                    </span>
-                    <h3 className="mt-1 font-serif text-base sm:text-lg font-bold leading-snug">{col.title}</h3>
-                  </div>
-                </div>
-
-                <div className="p-5 flex-1 flex flex-col justify-between">
-                  <p className="text-xs text-neutral-600 line-clamp-2 leading-relaxed font-sans">
-                    {col.description}
-                  </p>
-                  <div className="mt-4 pt-3 border-t border-neutral-100 flex items-center justify-between text-xs font-sans">
-                    <span className="font-semibold text-[#141312] group-hover:text-[#9B381E] transition-colors">
-                      View Lookbook Dossier →
-                    </span>
-                    <span className="text-[0.625rem] text-neutral-400 font-medium uppercase tracking-wider">{col.tagline}</span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        {/* 3. Full Curated Vault */}
-        <section id="all-finds" aria-labelledby="catalog-heading" className="space-y-6">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#E8E6E1] pb-4">
-            <div>
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-[#B89358]" />
-                <h2 id="catalog-heading" className="font-serif text-2xl sm:text-3xl font-bold text-[#141312] tracking-tight">
-                  The Curated Catalog
-                </h2>
-              </div>
-              <p className="text-xs text-neutral-500 font-sans mt-0.5">
-                Every listing is individually benchmarked for acoustic profile, durability, and seller reputation.
-              </p>
-            </div>
-
-            {/* Quick Search */}
-            <div className="relative w-full md:w-80">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-neutral-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search keyboards, light bars, coffee gear..."
-                className="w-full rounded-full bg-white border border-[#E8E6E1] py-2 pl-9 pr-4 text-xs font-medium text-[#141312] placeholder:text-neutral-400 shadow-2xs focus:outline-hidden focus:ring-1 focus:ring-[#141312]"
-              />
-            </div>
-          </div>
-
-          {/* Category Tabs & Quick Filters */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 font-sans">
-            {/* Categories */}
-            <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1">
-              {CATEGORIES.map((cat) => (
+        {/* 1. Category Switcher (The Control Center) */}
+        <section aria-label="Select Top 5 Category" className="sticky top-20 z-30 bg-[#FAF9F6]/95 backdrop-blur-md py-2 border-b border-[#E8E6E1]">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {CATEGORY_TABS.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
                 <button
-                  key={cat}
+                  key={tab.id}
                   type="button"
-                  onClick={() => handleCategoryClick(cat)}
-                  className={`rounded-full px-4 py-1.5 text-xs font-semibold tracking-tight whitespace-nowrap transition-all cursor-pointer ${
-                    selectedCategory === cat
-                      ? 'bg-[#141312] text-white shadow-xs'
-                      : 'bg-white border border-[#E8E6E1] text-neutral-600 hover:text-[#141312] hover:bg-neutral-50'
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                    isActive
+                      ? 'bg-[#141312] text-white border-[#141312] shadow-md'
+                      : 'bg-white text-neutral-800 border-[#E8E6E1] hover:border-neutral-300 hover:bg-neutral-50'
                   }`}
                 >
-                  {cat}
+                  <div className="flex items-center justify-between w-full mb-1">
+                    <Icon className={`h-4 w-4 ${isActive ? 'text-[#B89358]' : 'text-neutral-500'}`} />
+                    {isActive && (
+                      <span className="text-[0.5625rem] font-bold uppercase tracking-widest bg-white/20 px-1.5 py-0.2 rounded">
+                        Active
+                      </span>
+                    )}
+                  </div>
+                  <div className="font-semibold text-xs leading-snug">{tab.name}</div>
                 </button>
-              ))}
-            </div>
-
-            {/* Sort & Quick Badges */}
-            <div className="flex items-center gap-2 shrink-0">
-              <select
-                value={sortOption}
-                onChange={(e) => setSortOption(e.target.value as SortOption)}
-                aria-label="Sort products by"
-                className="rounded-full bg-white border border-[#E8E6E1] px-3.5 py-1.5 text-xs font-semibold text-neutral-700 shadow-2xs focus:outline-hidden focus:ring-1 focus:ring-[#141312] cursor-pointer"
-              >
-                <option value="popular">🔥 Most Verified Orders</option>
-                <option value="discount-high">⚡ Highest Discount</option>
-                <option value="price-low">💸 Valuation: Low to High</option>
-                <option value="price-high">👑 Valuation: High to Low</option>
-                <option value="rating">⭐ Highest Review Sentiment</option>
-                <option value="newest">✨ Newly Benchmarked</option>
-              </select>
-            </div>
+              );
+            })}
           </div>
-
-          {/* Product Grid */}
-          {filteredProducts.length > 0 ? (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {filteredProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onQuickView={(p) => setQuickViewProduct(p)}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-16 rounded-3xl bg-white border border-[#E8E6E1] p-8">
-              <Sparkles className="mx-auto h-8 w-8 text-neutral-400" />
-              <h3 className="mt-3 text-sm font-semibold text-neutral-800 font-sans">No matching items in active catalog</h3>
-              <p className="mt-1 text-xs text-neutral-500 font-sans">
-                Try loosening your search keywords or resetting the category filters.
-              </p>
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchQuery('');
-                  setSelectedCategory('All');
-                  setSelectedPrice('all');
-                }}
-                className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-[#141312] text-white text-xs font-semibold px-4 py-2 hover:bg-[#262524] transition-colors"
-              >
-                Reset All Filters
-              </button>
-            </div>
-          )}
         </section>
 
-        {/* 4. Shopee Voucher Promo Tray */}
-        <section id="vouchers" aria-labelledby="vouchers-heading" className="space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-[#E8E6E1] pb-4">
+        {/* 2. The Ranked Top 5 Cards Stack */}
+        <section aria-label={currentTab.name} className="space-y-6">
+          <div className="flex items-end justify-between border-b border-[#E8E6E1] pb-3">
             <div>
-              <div className="flex items-center gap-2">
-                <Ticket className="h-4 w-4 text-[#9B381E]" />
-                <h2 id="vouchers-heading" className="font-serif text-2xl sm:text-3xl font-bold text-[#141312] tracking-tight">
-                  Active Shopee Promo Codes & Vouchers
-                </h2>
-              </div>
-              <p className="text-xs text-neutral-500 font-sans mt-0.5">
-                Stackable at checkout for up to 15% instant reduction on verified orders.
-              </p>
+              <span className="text-[0.625rem] font-bold uppercase tracking-widest text-[#B89358]">
+                Ranked & Tested by Tajie
+              </span>
+              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#141312]">
+                {currentTab.name}
+              </h2>
             </div>
-            <Link
-              to="/vouchers"
-              className="inline-flex items-center gap-1 text-xs font-semibold text-[#141312] hover:text-[#9B381E] transition-colors font-sans"
-            >
-              <span>View all active codes</span>
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
+            <span className="text-xs text-neutral-500 font-medium">
+              5 of 5 Selected
+            </span>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {VOUCHERS.slice(0, 4).map((voucher) => (
-              <VoucherCard key={voucher.id} voucher={voucher} />
-            ))}
+          <div className="space-y-4">
+            {top5Products.map((product, idx) => {
+              const isWishlisted = wishlist.includes(product.id);
+              return (
+                <article
+                  key={product.id}
+                  className="group relative rounded-3xl bg-white border border-[#E8E6E1] p-5 sm:p-6 shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_28px_rgba(0,0,0,0.07)] hover:border-[#141312]/30 transition-all flex flex-col md:flex-row gap-6 items-start md:items-center"
+                >
+                  {/* Rank Number Badge */}
+                  <div className="shrink-0 flex md:flex-col items-center gap-2">
+                    <div className="h-12 w-12 rounded-2xl bg-[#141312] text-[#FAF9F6] grid place-items-center font-serif font-bold text-xl shadow-xs">
+                      #{idx + 1}
+                    </div>
+                  </div>
+
+                  {/* Thumbnail Image */}
+                  <div
+                    onClick={() => setQuickViewProduct(product)}
+                    className="relative aspect-square w-full md:w-36 shrink-0 rounded-2xl overflow-hidden bg-neutral-100 cursor-pointer border border-[#E8E6E1]"
+                  >
+                    <img
+                      src={product.image}
+                      alt={product.title}
+                      className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    {product.discountPercentage > 0 && (
+                      <span className="absolute top-2 left-2 rounded-md bg-[#9B381E] text-white text-[0.5625rem] font-bold px-1.5 py-0.5">
+                        -{product.discountPercentage}%
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Product Details & Editorial Verdict */}
+                  <div className="flex-1 min-w-0 space-y-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="rounded-full bg-neutral-100 text-[#141312] px-2.5 py-0.5 text-[0.625rem] font-bold uppercase tracking-wider border border-neutral-200">
+                        {product.rankRole ?? `#${idx + 1} Selected`}
+                      </span>
+                      <div className="flex items-center gap-1 text-xs text-neutral-600">
+                        <Star className="h-3 w-3 fill-[#B89358] text-[#B89358]" />
+                        <span className="font-semibold text-neutral-900">{product.rating}</span>
+                        <span className="text-neutral-400">({product.salesCount})</span>
+                      </div>
+                      <span className="inline-flex items-center gap-1 text-[0.5625rem] text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded font-medium">
+                        <ShieldCheck className="h-3 w-3" /> Shopee Star/Mall
+                      </span>
+                    </div>
+
+                    <h3
+                      onClick={() => setQuickViewProduct(product)}
+                      className="font-serif text-base sm:text-lg font-bold text-[#141312] leading-snug cursor-pointer hover:text-[#9B381E] transition-colors"
+                    >
+                      {product.title}
+                    </h3>
+
+                    {/* Why Ranked & Who It's For */}
+                    <div className="grid sm:grid-cols-2 gap-2 pt-1 text-xs">
+                      {product.whyRanked && (
+                        <div className="rounded-xl bg-[#FAF9F6] p-2.5 border border-[#E8E6E1]">
+                          <strong className="block text-[0.5625rem] uppercase tracking-wider text-[#9B381E] font-semibold mb-0.5">
+                            Why it made the Top 5:
+                          </strong>
+                          <span className="text-neutral-700 leading-snug">{product.whyRanked}</span>
+                        </div>
+                      )}
+                      {product.bestFor && (
+                        <div className="rounded-xl bg-[#FAF9F6] p-2.5 border border-[#E8E6E1]">
+                          <strong className="block text-[0.5625rem] uppercase tracking-wider text-neutral-500 font-semibold mb-0.5">
+                            Best for:
+                          </strong>
+                          <span className="text-neutral-700 leading-snug">{product.bestFor}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Price & Primary Call to Action */}
+                  <div className="w-full md:w-44 shrink-0 flex md:flex-col items-center md:items-end justify-between gap-3 pt-3 md:pt-0 border-t md:border-t-0 border-neutral-100">
+                    <div className="text-left md:text-right">
+                      <div className="flex items-baseline gap-1.5 md:justify-end">
+                        <span className="font-bold text-lg sm:text-xl text-[#141312]">
+                          {formatPHP(product.price)}
+                        </span>
+                        {product.originalPrice > product.price && (
+                          <span className="text-xs text-neutral-400 line-through">
+                            {formatPHP(product.originalPrice)}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[0.625rem] text-neutral-400 block">
+                        Verified Shopee price
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2 w-auto md:w-full">
+                      <a
+                        href={`/go/${product.slug}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={() => trackAffiliateClick(product.id)}
+                        className="flex-1 inline-flex items-center justify-center gap-1 rounded-xl bg-[#141312] hover:bg-[#262524] text-white text-xs font-semibold py-2.5 px-4 shadow-xs transition-transform hover:scale-[1.01] cursor-pointer"
+                      >
+                        <span>Check Shopee</span>
+                        <ArrowUpRight className="h-3.5 w-3.5" />
+                      </a>
+
+                      <button
+                        type="button"
+                        onClick={() => toggleWishlist(product.id)}
+                        className={`h-9 w-9 rounded-xl border grid place-items-center transition-colors cursor-pointer shrink-0 ${
+                          isWishlisted
+                            ? 'border-rose-300 bg-rose-50 text-rose-600'
+                            : 'border-neutral-200 bg-white text-neutral-500 hover:text-rose-600'
+                        }`}
+                        title={isWishlisted ? 'Remove from bag' : 'Save to bag'}
+                      >
+                        <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-rose-600 text-rose-600' : ''}`} />
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         </section>
 
-        {/* 5. SEO Editorial FAQ Section (Google Rich Result Booster) */}
+        {/* 3. The 30-Second Decision Matrix (Comparison Table) */}
+        <section aria-labelledby="matrix-heading" className="rounded-3xl bg-white border border-[#E8E6E1] p-6 sm:p-8 shadow-[0_2px_12px_rgba(0,0,0,0.03)] space-y-4">
+          <div>
+            <span className="text-[0.625rem] font-bold uppercase tracking-widest text-[#B89358]">
+              Decision Matrix
+            </span>
+            <h3 id="matrix-heading" className="font-serif text-xl sm:text-2xl font-bold text-[#141312]">
+              Compare All 5 at a Glance
+            </h3>
+            <p className="text-xs text-neutral-500">
+              Pick the exact match that fits your space and budget in seconds.
+            </p>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="border-b border-[#E8E6E1] text-[0.6875rem] uppercase tracking-wider text-neutral-400">
+                  <th className="py-2.5 pr-3 font-semibold">Rank</th>
+                  <th className="py-2.5 px-3 font-semibold">Product</th>
+                  <th className="py-2.5 px-3 font-semibold">Price</th>
+                  <th className="py-2.5 px-3 font-semibold">Best For</th>
+                  <th className="py-2.5 pl-3 font-semibold text-right">Direct Link</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#E8E6E1]/60">
+                {top5Products.map((p, i) => (
+                  <tr key={p.id} className="hover:bg-[#FAF9F6] transition-colors">
+                    <td className="py-3 pr-3 font-serif font-bold text-[#141312]">
+                      #{i + 1}
+                    </td>
+                    <td className="py-3 px-3 font-semibold text-neutral-900 max-w-xs truncate">
+                      {p.title}
+                    </td>
+                    <td className="py-3 px-3 font-bold text-[#141312] whitespace-nowrap">
+                      {formatPHP(p.price)}
+                    </td>
+                    <td className="py-3 px-3 text-neutral-600 text-[0.6875rem]">
+                      {p.bestFor ?? p.tagline}
+                    </td>
+                    <td className="py-3 pl-3 text-right whitespace-nowrap">
+                      <a
+                        href={`/go/${p.slug}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={() => trackAffiliateClick(p.id)}
+                        className="inline-flex items-center gap-1 font-semibold text-[#9B381E] hover:underline"
+                      >
+                        <span>Shopee ↗</span>
+                      </a>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        {/* 4. SEO Editorial FAQ Section (Google Rich Snippets) */}
         <section aria-labelledby="faq-heading" className="border-t border-[#E8E6E1] pt-12 space-y-6">
           <div className="max-w-2xl">
-            <span className="text-[0.625rem] font-bold uppercase tracking-widest text-[#B89358] font-sans">
+            <span className="text-[0.625rem] font-bold uppercase tracking-widest text-[#B89358]">
               Frequently Asked Questions
             </span>
             <h2 id="faq-heading" className="mt-1.5 font-serif text-2xl sm:text-3xl font-bold text-[#141312] tracking-tight">
               Shopee Curation & Voucher Guide
             </h2>
-            <p className="mt-1 text-xs text-neutral-500 font-sans">
+            <p className="mt-1 text-xs text-neutral-500">
               Key insights into our testing protocols, voucher stacking methods, and affiliate transparency.
             </p>
           </div>
 
-          <div className="space-y-3 max-w-4xl font-sans">
+          <div className="space-y-3 max-w-4xl">
             {HOMEPAGE_FAQS.map((faq, idx) => {
               const isOpen = openFaqIndex === idx;
               return (
