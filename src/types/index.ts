@@ -40,7 +40,10 @@ export interface Product {
   badge?: ProductBadge;
   reviewQuote?: string;
   pros?: string[];
+  theCatch?: string; // Honest drawback/caveat
   specs?: Record<string, string>;
+  keyFeatures?: string[];
+  sellerBadge?: 'Shopee Mall' | 'Shopee Star+' | 'Shopee Star';
   addedDate: string;
   clicksCount?: number;
   rank?: number;
